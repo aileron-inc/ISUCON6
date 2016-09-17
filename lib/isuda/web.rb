@@ -237,11 +237,12 @@ module Isuda
       halt(400) if keyword == ''
       description = params[:description]
       halt(400) if is_spam_content(description) || is_spam_content(keyword)
+      keyword_escape = Regexp.escape(keyword)
 
-      bound = [@user_id, keyword, description] * 2
+      bound = [@user_id, keyword, keyword_escape, description] * 2
       db.xquery(%|
-        INSERT INTO entry (author_id, keyword, description, created_at, updated_at)
-        VALUES (?, ?, ?, NOW(), NOW())
+        INSERT INTO entry (author_id, keyword, keyword_escape, description, created_at, updated_at)
+        VALUES (?, ?, ?, ?, NOW(), NOW())
         ON DUPLICATE KEY UPDATE
         author_id = ?, keyword = ?, description = ?, updated_at = NOW()
       |, *bound)
