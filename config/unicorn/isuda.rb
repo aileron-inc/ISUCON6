@@ -1,5 +1,5 @@
-worker_processes 5
-timeout 120
+worker_processes 10
+timeout 5
 
 listen File.expand_path('tmp/isuda.sock')
 
