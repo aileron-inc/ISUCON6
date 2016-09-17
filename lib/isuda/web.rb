@@ -109,13 +109,17 @@ module Isuda
         }
         escaped_content = Rack::Utils.escape_html(hashed_content)
         kw2hash.each do |(keyword, hash)|
-          keyword_url = url("/keyword/#{Rack::Utils.escape_path(keyword)}")
-          anchor = '<a href="%s">%s</a>' % [keyword_url, Rack::Utils.escape_html(keyword)]
-          escaped_content.gsub!(hash, anchor)
+          escaped_content.gsub!(hash, keyword_to_hash(keyword))
         end
         escaped_content.gsub(/\n/, "<br />\n")
       end
       memoize :htmlify
+
+      def keyword_to_hash(keyword)
+        keyword_url = url("/keyword/#{Rack::Utils.escape_path(keyword)}")
+        '<a href="%s">%s</a>' % [keyword_url, Rack::Utils.escape_html(keyword)]
+      end
+      memoize :keyword_to_hash
 
       def uri_escape(str)
         Rack::Utils.escape_path(str)
