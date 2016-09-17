@@ -8,6 +8,7 @@ gem 'mysql2-cs-bind'
 gem 'sinatra'
 gem 'unicorn'
 gem 'stackprof'
+gem 'redis'
 
 group :development do
   gem 'foreman'
