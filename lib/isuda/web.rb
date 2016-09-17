@@ -107,13 +107,17 @@ module Isuda
             kw2hash[matched_keyword] = hash
           end
         }
-        escaped_content = Rack::Utils.escape_html(hashed_content)
         kw2hash.each do |(keyword, hash)|
-          escaped_content.gsub!(hash, keyword_to_hash(keyword))
+          escaped_content(hashed_content).gsub!(hash, keyword_to_hash(keyword))
         end
         escaped_content.gsub(/\n/, "<br />\n")
       end
       memoize :htmlify
+
+      def escaped_content(hashed_content)
+        Rack::Utils.escape_html(hashed_content)
+      end
+      memoize :escaped_content
 
       def keyword_to_hash(keyword)
         keyword_url = url("/keyword/#{Rack::Utils.escape_path(keyword)}")
