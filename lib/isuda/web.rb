@@ -110,9 +110,14 @@ module Isuda
         kw2hash.each do |(keyword, hash)|
           escaped_content(hashed_content).gsub!(hash, keyword_to_hash(keyword))
         end
-        escaped_content.gsub(/\n/, "<br />\n")
+        escape_n(escaped_content)
       end
       memoize :htmlify
+
+      def escape_n(content)
+        content.gsub(/\n/, "<br />\n")
+      end
+      memoize :escape_n
 
       def escaped_content(hashed_content)
         Rack::Utils.escape_html(hashed_content)
