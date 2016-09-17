@@ -1,8 +1,7 @@
 worker_processes 5
 timeout 120
 
-shared_path = File.expand_path('shared')
-listen File.expand_path('tmp/isutar.sock', shared_path)
+listen File.expand_path('tmp/isutar.sock')
 
 stdout_path File.expand_path('log/isutar.log')
 stderr_path File.expand_path('log/isutar.log')
