@@ -27,7 +27,7 @@ module Isuda
 
     configure :development do
       require 'sinatra/reloader'
-
+      set :public_folder, File.expand_path('../../../public', __FILE__)
       register Sinatra::Reloader
     end
 
