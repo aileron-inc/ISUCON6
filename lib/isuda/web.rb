@@ -138,6 +138,16 @@ module Isuda
       def redirect_found(path)
         redirect(path, 302)
       end
+
+      def cached_total_entries
+        redis_get('total_entries') || refresh_total_entries
+      end
+
+      def refresh_total_entries
+        db.xquery(%| SELECT COUNT(*) AS count FROM entry |).first[:count].to_i.tap do |value|
+          redis_set('total_entries', value)
+        end
+      end
     end
 
     get '/initialize' do
@@ -182,7 +192,8 @@ module Isuda
         entry[:stars] = load_stars(entry[:keyword])
       end
 
-      total_entries = db.xquery(%| SELECT count(*) AS total_entries FROM entry |).first[:total_entries].to_i
+      #total_entries = db.xquery(%| SELECT count(*) AS total_entries FROM entry |).first[:total_entries].to_i
+      total_entries = cached_total_entries
 
       last_page = (total_entries.to_f / per_page.to_f).ceil
       from = [1, page - 5].max
@@ -254,6 +265,9 @@ module Isuda
         author_id = ?, keyword = ?, description = ?, updated_at = NOW()
       |, *bound)
 
+      # エントリーのカウント更新
+      refresh_total_entries
+
       redirect_found '/'
     end
 
@@ -279,6 +293,9 @@ module Isuda
       end
 
       db.xquery(%| DELETE FROM entry WHERE keyword = ? |, keyword)
+
+      # エントリーのカウント更新
+      refresh_total_entries
 
       redirect_found '/'
     end
