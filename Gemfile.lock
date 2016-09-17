@@ -6,7 +6,6 @@ GEM
     foreman (0.82.0)
       thor (~> 0.19.1)
     kgio (2.10.0)
-    memoist (0.15.0)
     multi_json (1.12.1)
     mysql2 (0.4.4)
     mysql2-cs-bind (0.0.6)
@@ -41,7 +40,6 @@ PLATFORMS
 DEPENDENCIES
   erubis
   foreman
-  memoist
   mysql2
   mysql2-cs-bind
   sinatra
