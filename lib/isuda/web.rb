@@ -122,7 +122,8 @@ module Isuda
       end
 
       # starローカル化
-      def load_stars(keyword = '')
+      def load_stars(keyword)
+        keyword = keyword || ''
         db.xquery(%| select * from star where keyword = ? |, keyword).to_a
       end
 
