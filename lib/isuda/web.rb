@@ -113,9 +113,10 @@ module Isuda
           end
         }
         kw2hash.each do |(keyword, hash)|
-          escaped_content(hashed_content).gsub!(hash, keyword_to_hash(keyword))
+          content = escaped_content(hashed_content)
+          content.gsub!(hash, keyword_to_hash(keyword))
         end
-        escape_n(escaped_content)
+        escape_n(content)
       end
       memoize :htmlify
 
