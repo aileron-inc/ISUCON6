@@ -95,11 +95,10 @@ module Isuda
       end
 
       def keyword_pattern
-        return @pattern if @pattern
-        @pattern = db.xquery(%| select * from entry |).map {|k| Regexp.escape(k[:keyword]) }.join('|')
+        db.xquery(%| select GROUP_CONCAT(e.keyword) AS keyword FROM entry AS e |).first[:keyword].tap {|k| Regexp.escape(k) }.gsub(',', '|')
       end
 
-      def htmlify(content)
+      def htmlify(content, keyword_pattern)
         kw2hash = {}
         hashed_content = content.gsub(/(#{keyword_pattern})/) {|m|
           matched_keyword = $1
@@ -168,8 +167,10 @@ module Isuda
         LIMIT #{per_page}
         OFFSET #{per_page * (page - 1)}
       |)
+
+      keyword_pattern = keyword_pattern()
       entries.each do |entry|
-        entry[:html] = htmlify(entry[:description])
+        entry[:html] = htmlify(entry[:description], keyword_pattern)
         entry[:stars] = load_stars(entry[:keyword])
       end
 
