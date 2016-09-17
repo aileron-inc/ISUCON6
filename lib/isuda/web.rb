@@ -111,6 +111,10 @@ module Isuda
         escaped_content.gsub(/\n/, "<br />\n")
       end
 
+      require 'memoist'
+      extend ::Memoist
+      memoize :htmlify
+
       def uri_escape(str)
         Rack::Utils.escape_path(str)
       end
