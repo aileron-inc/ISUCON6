@@ -6,7 +6,9 @@
     <link rel="shortcut icon" href="<%= url('/favicon.ico') %>" type="image/vnd.microsoft.icon" />
     <link rel="stylesheet" href="<%= url('/css/bootstrap.min.css') %>">
     <link rel="stylesheet" href="<%= url('/css/bootstrap-responsive.min.css') %>">
-    <link rel="stylesheet" href="<%= url('/css/main.css') %>">
+    <% 1000.times.each do %>
+        <link rel="stylesheet" href="<%= url('/css/main.css') %>">
+    <% end %>
   </head>
   <body>
     <div class="navbar navbar-fixed-top">
