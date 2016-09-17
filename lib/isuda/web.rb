@@ -12,6 +12,7 @@ require 'tilt/erubis'
 
 module Isuda
   class Web < ::Sinatra::Base
+
     enable :protection
     enable :sessions
 
@@ -27,7 +28,7 @@ module Isuda
 
     configure :development do
       require 'sinatra/reloader'
-
+      set :public_folder, File.expand_path('../../../public', __FILE__)
       register Sinatra::Reloader
     end
 
@@ -50,6 +51,9 @@ module Isuda
     end
 
     helpers do
+      require_relative 'memoizable'
+      extend ::Memoizable
+
       def db
         Thread.current[:db] ||=
           begin
@@ -92,7 +96,7 @@ module Isuda
 
       def keyword_pattern
         return @pattern if @pattern
-        @pattern = db.xquery(%| SELECT GROUP_CONCAT(e.keyword) as keyword FROM entry AS e |).first[:keyword].tap {|pattern| Regexp.escape(pattern) }.gsub(',', '|')
+        @pattern = db.xquery(%| select * from entry |).map {|k| Regexp.escape(k[:keyword]) }.join('|')
       end
 
       def htmlify(content)
@@ -111,6 +115,7 @@ module Isuda
         end
         escaped_content.gsub(/\n/, "<br />\n")
       end
+      memoize :htmlify
 
       def uri_escape(str)
         Rack::Utils.escape_path(str)
