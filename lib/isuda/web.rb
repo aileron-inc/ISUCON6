@@ -52,7 +52,7 @@ module Isuda
 
     helpers do
       require_relative 'memoizable'
-      extend ::Memoizable
+      include Memoizable
 
       def db
         Thread.current[:db] ||=
