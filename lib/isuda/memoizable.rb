@@ -13,19 +13,20 @@ module Memoizable
         alias_method original, name
         private      original
         define_method(name) do |*args|
-          value = redis.get(args)
+          key = args.hash
+          value = redis.get(key)
           return value if value
           value = send(original, *args)
-          redis.set(args, value)
+          redis.set(key, value)
           value
         end
         define_method("#{name}_renew") do |*args|
+          key = args.hash
           value = send(original, *args)
-          redis.set(args, value)
+          redis.set(key, value)
           value
         end
       end
-
     end
   end
 end
