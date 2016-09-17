@@ -95,7 +95,7 @@ module Isuda
 
       def keyword_pattern
         return @pattern if @pattern
-        @pattern = db.xquery(%| SELECT GROUP_CONCAT(e.keyword) as keyword FROM entry AS e |).first[:keyword].tap {|pattern| Regexp.escape(pattern) }.gsub(',', '|')
+        @pattern = db.xquery(%| select * from entry |).map {|k| Regexp.escape(k[:keyword]) }.join('|')
       end
 
       def htmlify(content)
