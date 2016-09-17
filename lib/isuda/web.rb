@@ -90,8 +90,8 @@ module Isuda
       end
 
       def keyword_pattern
-        ## return @pattern if @pattern
-        pattern = db.xquery(%| select * from entry |).map {|k| Regexp.escape(k[:keyword]) }.join('|')
+        return @pattern if @pattern
+        @pattern = db.xquery(%| select * from entry |).map {|k| Regexp.escape(k[:keyword]) }.join('|')
       end
 
       def htmlify(content)
