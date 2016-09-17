@@ -41,7 +41,7 @@ module Isutar
       end
     end
 
-    get '/initialize' do
+    get '/stars/initialize' do
       db.xquery('TRUNCATE star')
 
       content_type :json
