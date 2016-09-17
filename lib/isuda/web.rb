@@ -12,6 +12,7 @@ require 'tilt/erubis'
 
 module Isuda
   class Web < ::Sinatra::Base
+
     enable :protection
     enable :sessions
 
@@ -49,6 +50,9 @@ module Isuda
     end
 
     helpers do
+      require_relative 'memoizable'
+      extend ::Memoizable
+
       def db
         Thread.current[:db] ||=
           begin
@@ -110,9 +114,6 @@ module Isuda
         end
         escaped_content.gsub(/\n/, "<br />\n")
       end
-
-      require 'memoist'
-      extend ::Memoist
       memoize :htmlify
 
       def uri_escape(str)
