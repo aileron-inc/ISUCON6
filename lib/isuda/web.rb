@@ -93,7 +93,6 @@ module Isuda
         validation['valid']
         ! validation['valid']
       end
-      memoize :is_spam_content
 
       def cached_patterns
         redis_get('patterns') || refresh_patterns
