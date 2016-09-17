@@ -89,11 +89,14 @@ module Isuda
         ! validation['valid']
       end
 
+      def keyword_pattern
+        return @pattern if @pattern
+        @pattern = db.xquery(%| select * from entry |).map {|k| Regexp.escape(k[:keyword]) }.join('|')
+      end
+
       def htmlify(content)
-        keywords = db.xquery(%| select * from entry order by character_length(keyword) desc |)
-        pattern = keywords.map {|k| Regexp.escape(k[:keyword]) }.join('|')
         kw2hash = {}
-        hashed_content = content.gsub(/(#{pattern})/) {|m|
+        hashed_content = content.gsub(/(#{keyword_pattern})/) {|m|
           matched_keyword = $1
           "isuda_#{Digest::SHA1.hexdigest(matched_keyword)}".tap do |hash|
             kw2hash[matched_keyword] = hash
