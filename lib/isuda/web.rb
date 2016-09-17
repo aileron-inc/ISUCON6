@@ -94,14 +94,19 @@ module Isuda
         ! validation['valid']
       end
 
-      def keyword_pattern
-        return @pattern if @pattern
-        @pattern = db.xquery(%| select * from entry |).map {|k| Regexp.escape(k[:keyword]) }.join('|')
+      def cached_patterns
+        redis_get('patterns') || refresh_patterns
+      end
+
+      def refresh_patterns
+        Regexp.escape(db.xquery(%| SELECT GROUP_CONCAT(e.keyword) AS keywords FROM entry AS e |).first[:keywords]).gsub(',', '|').tap do |keywords|
+          redis_set('patterns', keywords)
+        end
       end
 
       def htmlify(content)
         kw2hash = {}
-        hashed_content = content.gsub(/(#{keyword_pattern})/) {|m|
+        hashed_content = content.gsub(/(#{cached_patterns})/) {|m|
           matched_keyword = $1
           "isuda_#{Digest::SHA1.hexdigest(matched_keyword)}".tap do |hash|
             kw2hash[matched_keyword] = hash
@@ -257,15 +262,17 @@ module Isuda
       halt(400) if keyword == ''
       description = params[:description]
       halt(400) if is_spam_content(description) || is_spam_content(keyword)
-      keyword_escape = Regexp.escape(keyword)
 
-      bound = [@user_id, keyword, keyword_escape, description] * 2
+      bound = [@user_id, keyword, description] * 2
       db.xquery(%|
-        INSERT INTO entry (author_id, keyword, keyword_escape, description, created_at, updated_at)
-        VALUES (?, ?, ?, ?, NOW(), NOW())
+        INSERT INTO entry (author_id, keyword, description, created_at, updated_at)
+        VALUES (?, ?, ?, NOW(), NOW())
         ON DUPLICATE KEY UPDATE
         author_id = ?, keyword = ?, keyword_escape = ?, description = ?, updated_at = NOW()
       |, *bound)
+
+      # パターン更新
+      refresh_patterns
 
       # エントリーのカウント更新
       refresh_total_entries
