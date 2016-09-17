@@ -262,7 +262,7 @@ module Isuda
       |, *bound)
 
       # エントリーのカウント更新
-      refresh_total_count
+      refresh_total_entries
 
       redirect_found '/'
     end
@@ -291,7 +291,7 @@ module Isuda
       db.xquery(%| DELETE FROM entry WHERE keyword = ? |, keyword)
 
       # エントリーのカウント更新
-      refresh_total_count
+      refresh_total_entries
 
       redirect_found '/'
     end
